@@ -1,0 +1,4 @@
+﻿  main.cpp
+G:\School\Year 2\Semester 4\Game & Graphics 3\MeshImport\MeshImport\main.cpp(41,27): warning C4018: '<': signed/unsigned mismatch
+G:\School\Year 2\Semester 4\Game & Graphics 3\MeshImport\MeshImport\main.cpp(73,27): warning C4018: '<': signed/unsigned mismatch
+  MeshImport.vcxproj -> G:\School\Year 2\Semester 4\Game & Graphics 3\MeshImport\x64\Debug\MeshImport.exe
