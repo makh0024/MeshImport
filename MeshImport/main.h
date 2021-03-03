@@ -22,9 +22,9 @@ public:
 class VertFormat
 {
 public:
-	VertFormat();
+	VertFormat() {};
 	VertFormat(vec3 pos, vec3 norm, vec2 text) { position = pos, normal = norm, texture = text; }
 
-	vec3 position, normal;
-	vec2 texture;
-}
+	vec3 position = vec3(0.f, 0.f, 0.f), normal = vec3(0.f, 0.f, 0.f);
+	vec2 texture = vec2(0.f, 0.f);
+};

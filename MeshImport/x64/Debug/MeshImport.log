@@ -1,4 +1,5 @@
 ﻿  main.cpp
 G:\School\Year 2\Semester 4\Game & Graphics 3\MeshImport\MeshImport\main.cpp(45,27): warning C4018: '<': signed/unsigned mismatch
 G:\School\Year 2\Semester 4\Game & Graphics 3\MeshImport\MeshImport\main.cpp(77,27): warning C4018: '<': signed/unsigned mismatch
+G:\School\Year 2\Semester 4\Game & Graphics 3\MeshImport\MeshImport\main.cpp(107,35): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   MeshImport.vcxproj -> G:\School\Year 2\Semester 4\Game & Graphics 3\MeshImport\x64\Debug\MeshImport.exe

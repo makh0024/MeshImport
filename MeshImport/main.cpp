@@ -1,3 +1,4 @@
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include "main.h"
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
@@ -6,10 +7,14 @@
 #include <vector>
 #include <stdint.h>
 #include <fstream>
+#include <string>
+#include <experimental/filesystem>
 
 #define uint32 uint32_t
 
 using namespace std;
+
+namespace fs = std::experimental::filesystem;
 
 std::vector<aiMesh*> meshes;
 
@@ -44,14 +49,10 @@ void ImportFile(const std::string& pFile) {
 
             position = vec3(mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z);
 
-            //vertices.push_back(position);
-
             //Normals
             vec3 normal = vec3(0.f, 0.f, 0.f);
 
             normal = vec3(mesh->mNormals[j].x, mesh->mNormals[j].y, mesh->mNormals[j].z);
-
-            //normals.push_back(normal);
 
             //Textures
             vec2 texture = vec2(0.f, 0.f);
@@ -66,12 +67,12 @@ void ImportFile(const std::string& pFile) {
                 texture = vec2(0.f, 0.f);
             }
 
-            //textures.push_back(texture);
-
             VertFormat vertex = VertFormat(position, normal, texture);
 
             vertices.push_back(vertex);
         }
+
+        std::vector<VertFormat> finalVert;
 
         for (int u = 0; u < mesh->mNumFaces; u++)
         {
@@ -79,60 +80,39 @@ void ImportFile(const std::string& pFile) {
 
             for (unsigned int v = 0; v < face.mNumIndices; v++)
             {
-                indices.push_back(face.mIndices[v]);
+                finalVert.push_back(vertices.at(face.mIndices[v]));
             }
-
         }
 
-        meshes.push_back(mesh); // need processed mesh here
+        vertices = finalVert;
+
+        meshes.push_back(mesh);
     }
 }
 
-int main()
+void ImportAndWrite(const std::string& filename)
 {
-    ImportFile("Cube.fbx");
+    ImportFile(filename + ".fbx");
 
-    /*for (int i = 0; i < vertices.size(); i++)
-    {
-        std::cout << "Vertex " << i << ": " << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << std::endl;
-        std::cout << "Normal " << i << ": " << normals[i].x << ", " << normals[i].y << ", " << normals[i].z << std::endl;
-    }
+    ofstream newMesh(filename + ".fms", ios::out | ios::binary);
 
-    for (int i = 0; i < indices.size(); i++)
-    {
-        if (i % 3 == 0)
-            std::cout << std::endl;
-       
-        if (i % 3 == 0)
-            std::cout << "Triangle " << i / 3 << ": ";
-
-        std::cout << indices[i] << ", ";
-
-    }
-    cout << endl;
-    for (int i = 0; i < textures.size(); i++)
-    {
-        std::cout << "Texture " << i << ": ";
-
-        std::cout << textures[i].x << ", " << textures[i].y << endl;
-
-    }*/
-
-    ofstream newMesh("newMesh.FMS", ios::out | ios::binary);
-    
     if (!newMesh)
     {
         cout << "Cannot open file!" << endl;
-        return 1;
+        return;
     }
 
-    newMesh.write(".FMS", 4);
+    newMesh.write(".fms", 4);
+
+    int numVerts = vertices.size();
+
+    newMesh.write((char*)&numVerts, sizeof(int));
 
     for (int i = 0; i < vertices.size(); i++)
     {
-        char* vertX = (char*) (&vertices[i].position.x);
-        char* vertY = (char*) (&vertices[i].position.y);
-        char* vertZ = (char*) (&vertices[i].position.z);
+        char* vertX = (char*)(&vertices[i].position.x);
+        char* vertY = (char*)(&vertices[i].position.y);
+        char* vertZ = (char*)(&vertices[i].position.z);
 
         newMesh.write(vertX, sizeof(float));
         newMesh.write(vertY, sizeof(float));
@@ -154,6 +134,25 @@ int main()
     }
 
     newMesh.close();
+
+    return;
+}
+
+int main()
+{
+    string filename;
+    
+    fs::path folder = fs::current_path();
+   
+    filename = "Cube.fbx";
+
+    for (auto& file : fs::directory_iterator(folder)) 
+    {
+        if (file.path().extension() == ".fbx")
+        {
+            ImportAndWrite(file.path().stem().string());
+        }
+    }
 
     return 0;
 }
