@@ -18,3 +18,13 @@ public:
 
 	float x = 0, y = 0, z = 0;
 };
+
+class VertFormat
+{
+public:
+	VertFormat();
+	VertFormat(vec3 pos, vec3 norm, vec2 text) { position = pos, normal = norm, texture = text; }
+
+	vec3 position, normal;
+	vec2 texture;
+}
