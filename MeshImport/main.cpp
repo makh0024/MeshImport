@@ -35,6 +35,7 @@ void ImportFile(const std::string& pFile) {
     if (!scene)
     {
         std::cout << "file not found \n";
+        cout << pFile;
         return;
     }
 
@@ -92,9 +93,11 @@ void ImportFile(const std::string& pFile) {
 
 void ImportAndWrite(const std::string& filename)
 {
-    ImportFile(filename + ".fbx");
+    ImportFile(filename/* + ".fbx"*/);
 
-    ofstream newMesh(filename + ".fms", ios::out | ios::binary);
+    string fileNameWithoutExtension = filename.substr(0, filename.rfind("."));
+
+    ofstream newMesh(fileNameWithoutExtension + ".fms", ios::out | ios::binary);
 
     if (!newMesh)
     {
@@ -138,20 +141,40 @@ void ImportAndWrite(const std::string& filename)
     return;
 }
 
-int main()
+void CurrentFolderReadMain()
 {
-    string filename;
-    
     fs::path folder = fs::current_path();
-   
-    filename = "Cube.fbx";
 
-    for (auto& file : fs::directory_iterator(folder)) 
+    for (auto& file : fs::directory_iterator(folder))
     {
         if (file.path().extension() == ".fbx")
         {
-            ImportAndWrite(file.path().stem().string());
+            ImportAndWrite(file.path().string());
         }
+    }
+}
+
+int main(int argc, char** argv)
+{
+    if (argc < 2)
+    {
+        printf("Checking for all .fbx models in current folder!");
+
+        CurrentFolderReadMain();
+
+        return 0;
+    }
+    cout << argv[1] << endl;
+
+    string filename;
+
+    filename = argv[1];
+
+    fs::path file = filename;
+
+    if (file.extension() == ".fbx")
+    {
+        ImportAndWrite(file.string());
     }
 
     return 0;
